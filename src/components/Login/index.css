@@ -1,0 +1,13 @@
+.mainDiv1 {
+  background-color: #000000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  color: White;
+  flex-direction: column;
+}
+form {
+  display: flex;
+  flex-direction: column;
+}
