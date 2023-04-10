@@ -65,6 +65,7 @@ class Login extends Component {
             alt="website logo"
           />
         </div>
+        <p>User Name : rahul Password: rahul@2021</p>
         <form onSubmit={this.getTheData}>
           <label htmlFor="nameTaker">USERNAME</label>
           <input
