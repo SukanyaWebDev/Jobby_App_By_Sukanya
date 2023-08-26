@@ -38,47 +38,53 @@ class Cards extends Component {
     const {id} = params
     console.log(id)
     const data = await fetch(`https://apis.ccbp.in/jobs/${id}`, options)
-    this.setState({isSuccess: data.ok})
-    const response = await data.json()
-    const skill = response.job_details.skills
-    const displaySkill = skill.map(eachItem => ({
-      name: eachItem.name,
-      imageUrl: eachItem.image_url,
-    }))
+    if (data.ok === true) {
+      const response = await data.json()
 
-    const detailsEntire = response.job_details
-    const listAtCompany = {
-      description: detailsEntire.life_at_company.description,
-      imageUrl: detailsEntire.life_at_company.image_url,
+      const skill = response.job_details.skills
+      const displaySkill = skill.map(eachItem => ({
+        name: eachItem.name,
+        imageUrl: eachItem.image_url,
+      }))
+
+      const detailsEntire = response.job_details
+      const listAtCompany = {
+        description: detailsEntire.life_at_company.description,
+        imageUrl: detailsEntire.life_at_company.image_url,
+      }
+
+      const jobDetailsFor = {
+        companyLogoUrl: detailsEntire.company_logo_url,
+        companyWebsiteUrl: detailsEntire.company_website_url,
+        employmentType: detailsEntire.employment_type,
+        jobDescription: detailsEntire.job_description,
+        location: detailsEntire.location,
+        packagePerAnnum: detailsEntire.package_per_annum,
+        rating: detailsEntire.rating,
+        title: detailsEntire.title,
+      }
+      this.setState({jobDetails: jobDetailsFor, liftAtCompany: listAtCompany})
+
+      const similarJob = response.similar_jobs
+      const simJobs = similarJob.map(eachItem => ({
+        companyLogoUrl: eachItem.company_logo_url,
+        employmentType: eachItem.employment_type,
+        id: eachItem.id,
+        jobDescription: eachItem.job_description,
+        location: eachItem.location,
+        rating: eachItem.rating,
+        title: eachItem.title,
+      }))
+
+      this.setState({isLoading: false, sJobs: simJobs})
+
+      // eslint-disable-next-line react/no-unused-state
+      this.setState({skillToDisplay: displaySkill})
     }
 
-    const jobDetailsFor = {
-      companyLogoUrl: detailsEntire.company_logo_url,
-      companyWebsiteUrl: detailsEntire.company_website_url,
-      employmentType: detailsEntire.employment_type,
-      jobDescription: detailsEntire.job_description,
-      location: detailsEntire.location,
-      packagePerAnnum: detailsEntire.package_per_annum,
-      rating: detailsEntire.rating,
-      title: detailsEntire.title,
+    if (data.ok === false) {
+      this.setState({isSuccess: false, isLoading: false})
     }
-    this.setState({jobDetails: jobDetailsFor, liftAtCompany: listAtCompany})
-    console.log(response)
-    const similarJob = response.similar_jobs
-    const simJobs = similarJob.map(eachItem => ({
-      companyLogoUrl: eachItem.company_logo_url,
-      employmentType: eachItem.employment_type,
-      id: eachItem.id,
-      jobDescription: eachItem.job_description,
-      location: eachItem.location,
-      rating: eachItem.rating,
-      title: eachItem.title,
-    }))
-
-    this.setState({isLoading: false, sJobs: simJobs})
-
-    // eslint-disable-next-line react/no-unused-state
-    this.setState({skillToDisplay: displaySkill})
   }
 
   renderBlogItemDetails = () => {
@@ -218,7 +224,7 @@ class Cards extends Component {
     return (
       <div className="blog-container">
         {isLoading ? (
-          <div>
+          <div data-testid="loader">
             <Loader type="TailSpin" color="#00BFFF" height={50} width={50} />
           </div>
         ) : (

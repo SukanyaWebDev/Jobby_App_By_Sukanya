@@ -22,10 +22,9 @@ class Home extends Component {
             reviews.find the that fits your ability and potential
           </p>
         </div>
-
-        <button type="button">
-          <Link to="/jobs">Find Jobs</Link>
-        </button>
+        <Link to="/jobs">
+          <button type="button">Find Jobs</button>
+        </Link>
       </div>
     )
   }

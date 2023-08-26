@@ -52,6 +52,7 @@ class Jobs extends Component {
     userInput: '',
     myOption: [],
     searchInput: '',
+    isSuccess: true,
   }
 
   componentDidMount() {
@@ -73,20 +74,30 @@ class Jobs extends Component {
       method: 'GET',
     }
     const response = await fetch(apiUrl, options)
-    const data = await response.json()
-    const updatedArray = data.jobs
-    const updatedMyArray = updatedArray.map(eachItem => ({
-      id: eachItem.id,
-      companyLogoUrl: eachItem.company_logo_url,
-      employmentType: eachItem.employment_type,
-      jobDescription: eachItem.job_description,
-      location: eachItem.location,
-      packagePerAnnum: eachItem.package_per_annum,
-      rating: eachItem.rating,
-      title: eachItem.title,
-    }))
-    // console.log(updatedArray)
-    this.setState({myArray: updatedMyArray})
+    if (response.ok === true) {
+      const data = await response.json()
+      const updatedArray = data.jobs
+      const updatedMyArray = updatedArray.map(eachItem => ({
+        id: eachItem.id,
+        companyLogoUrl: eachItem.company_logo_url,
+        employmentType: eachItem.employment_type,
+        jobDescription: eachItem.job_description,
+        location: eachItem.location,
+        packagePerAnnum: eachItem.package_per_annum,
+        rating: eachItem.rating,
+        title: eachItem.title,
+      }))
+      // console.log(updatedArray)
+      this.setState({myArray: updatedMyArray, isSuccess: true})
+    }
+
+    if (response.ok === false) {
+      this.setState({isSuccess: false})
+    }
+  }
+
+  getUrlAgain = () => {
+    this.getData()
   }
 
   renderCards = () => {
@@ -174,7 +185,7 @@ class Jobs extends Component {
   }
 
   render() {
-    const {userInput} = this.state
+    const {userInput, isSuccess} = this.state
     const jwtToken = Cookies.get('jwt_token')
     if (jwtToken === undefined) {
       return <Redirect to="/login" />
@@ -184,101 +195,115 @@ class Jobs extends Component {
     return (
       <div>
         <Header />
-        <div className="first-dev">
-          <div className="firstDev" style={{marginRight: '3px'}}>
-            <div style={{color: 'wheat'}}>{this.renderProfileImage()}</div>
-            <div>
-              <h1 style={{color: 'white', fontSize: '20px'}}>
-                Type of Employment
-              </h1>
-              <ul className="myListFor">
-                {employmentTypesList.map(eachItem => (
-                  <li key={eachItem.employmentTypeId}>
-                    <input
-                      type="checkbox"
-                      name="salary"
-                      id={eachItem.employmentTypeId}
-                      onClick={this.typeTaker}
-                      value={eachItem.employmentTypeId}
-                    />
-                    <label htmlFor={eachItem.employmentTypeId}>
-                      {eachItem.label}
-                    </label>
-                  </li>
-                ))}
-              </ul>
+        {isSuccess ? (
+          <div className="first-dev">
+            <div className="firstDev" style={{marginRight: '3px'}}>
+              <div style={{color: 'wheat'}}>{this.renderProfileImage()}</div>
+              <div>
+                <h1 style={{color: 'white', fontSize: '20px'}}>
+                  Type of Employment
+                </h1>
+                <ul className="myListFor">
+                  {employmentTypesList.map(eachItem => (
+                    <li key={eachItem.employmentTypeId}>
+                      <input
+                        type="checkbox"
+                        name="salary"
+                        id={eachItem.employmentTypeId}
+                        onClick={this.typeTaker}
+                        value={eachItem.employmentTypeId}
+                      />
+                      <label htmlFor={eachItem.employmentTypeId}>
+                        {eachItem.label}
+                      </label>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <hr />
+              <div>
+                <h1 style={{color: 'wheat', fontSize: '20px'}}>Salary Range</h1>
+                <ul className="myListFor">
+                  {salaryRangesList.map(eachItem => (
+                    <li key={eachItem.salaryRangeId}>
+                      <input
+                        type="radio"
+                        id={eachItem.salaryRangeId}
+                        name="salary"
+                        value={eachItem.label}
+                        onClick={this.salaryNumber}
+                      />
+                      <label htmlFor={eachItem.salaryRangeId}>
+                        {eachItem.label}
+                      </label>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
-            <hr />
-            <div>
-              <h1 style={{color: 'wheat', fontSize: '20px'}}>Salary Range</h1>
-              <ul className="myListFor">
-                {salaryRangesList.map(eachItem => (
-                  <li key={eachItem.salaryRangeId}>
-                    <input
-                      type="radio"
-                      id={eachItem.salaryRangeId}
-                      name="salary"
-                      value={eachItem.label}
-                      onClick={this.salaryNumber}
-                    />
-                    <label htmlFor={eachItem.salaryRangeId}>
-                      {eachItem.label}
-                    </label>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-          <div className="secondDiv">
-            <div
-              style={{
-                backgroundColor: '#000000',
-                display: 'flex',
-                flexDirection: 'row',
-                justifyContent: 'flex-start',
-                alignItems: 'center',
-                color: '#cbd5e1',
-                borderWidth: '2px',
-                borderStyle: 'solid',
-                borderColor: '#cbd5e1',
-                padding: '10px',
-                width: '30%',
-                maxHeight: '45px',
-                marginLeft: '50px',
-                marginTop: '30px',
-              }}
-            >
-              <input
-                type="search"
-                placeholder="search"
-                onChange={this.onChangeTheValue}
-                value={userInput}
+            <div className="secondDiv">
+              <div
                 style={{
                   backgroundColor: '#000000',
-                  width: '85%',
-                  height: '30px',
-                  color: '#f1f5f9',
-                  border: 'hidden',
-                  background: 'none',
-                  outline: 'none',
+                  display: 'flex',
+                  flexDirection: 'row',
+                  justifyContent: 'flex-start',
+                  alignItems: 'center',
+                  color: '#cbd5e1',
+                  borderWidth: '2px',
+                  borderStyle: 'solid',
+                  borderColor: '#cbd5e1',
+                  padding: '10px',
+                  width: '30%',
+                  maxHeight: '45px',
+                  marginLeft: '50px',
+                  marginTop: '30px',
                 }}
-              />
-              <FaSearch
-                testid="searchButton"
-                style={{
-                  height: '30px',
-                  backgroundColor: '#202020',
-                  width: '39px',
-                  padding: '5px',
-                  marginLeft: '3px',
-                }}
-                onClick={this.getDetailsOfMatchedData}
-              />
-            </div>
+              >
+                <input
+                  type="search"
+                  placeholder="search"
+                  onChange={this.onChangeTheValue}
+                  value={userInput}
+                  style={{
+                    backgroundColor: '#000000',
+                    width: '85%',
+                    height: '30px',
+                    color: '#f1f5f9',
+                    border: 'hidden',
+                    background: 'none',
+                    outline: 'none',
+                  }}
+                />
+                <FaSearch
+                  testid="searchButton"
+                  style={{
+                    height: '30px',
+                    backgroundColor: '#202020',
+                    width: '39px',
+                    padding: '5px',
+                    marginLeft: '3px',
+                  }}
+                  onClick={this.getDetailsOfMatchedData}
+                />
+              </div>
 
-            <div className="ashok">{this.renderCards()}</div>
+              <div className="ashok">{this.renderCards()}</div>
+            </div>
           </div>
-        </div>
+        ) : (
+          <div>
+            <img
+              src="https://assets.ccbp.in/frontend/react-js/failure-img.png"
+              alt="failure view"
+            />
+            <h1>Oops! Something Went Wrong</h1>
+            <p>We cannot seem to find the page you are looking for</p>
+            <button type="button" onClick={this.getUrlAgain}>
+              Retry
+            </button>
+          </div>
+        )}
       </div>
     )
   }
