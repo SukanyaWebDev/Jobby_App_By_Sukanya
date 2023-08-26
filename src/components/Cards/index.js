@@ -107,7 +107,7 @@ class Cards extends Component {
     } = jobDetails
 
     return (
-      <div className="ashok-con">
+      <div className="main-con">
         {isSuccess ? (
           <div>
             <Header />

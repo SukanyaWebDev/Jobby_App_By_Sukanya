@@ -288,7 +288,7 @@ class Jobs extends Component {
                 />
               </div>
 
-              <div className="ashok">{this.renderCards()}</div>
+              <div className="mainPage">{this.renderCards()}</div>
             </div>
           </div>
         ) : (
